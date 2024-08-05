@@ -82,8 +82,8 @@ async def fetch_keys(tvg_id):
         async with session.get(f'{CONFIG["keys_url"]}/{tvg_id}') as response:
             response.raise_for_status()
             keys = await response.json()
-            licence1 = keys[0]["data"]["licence1"]
-            licence2 = keys[0]["data"]["licence2"]
+            licence1 = keys["data"]["licence1"]
+            licence2 = keys["data"]["licence2"]
             return hex_to_base64(licence2), hex_to_base64(licence1)
 
 def run_async(func, *args):
@@ -113,7 +113,7 @@ def index():
     try:
         with concurrent.futures.ThreadPoolExecutor() as pool:
             channels, hmac = run_async(fetch_all_data)
-            channel_url = hmac[0]["channel"]
+            channel_url = hmac["channel"]
             return redirect(channel_url)
     except Exception as e:
         logger.error(f"Failed to fetch channel URL: {e}")
@@ -161,8 +161,8 @@ def tataplay_playlist():
     try:
         with concurrent.futures.ThreadPoolExecutor() as pool:
             channels, hmac = run_async(fetch_all_data)
-            user_agent = hmac[0]["userAgent"]
-            hdntl = hmac[0]["data"]["hdntl"]
+            user_agent = hmac["userAgent"]
+            hdntl = hmac["data"]["hdntl"]
 
             # Build M3U playlist
             m3u_playlist = [f'#EXTM3U x-tvg-url="{CONFIG["epg_url"]}"\n\n']
